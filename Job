@@ -1,0 +1,54 @@
+import { useState } from "react";
+
+const jobData = [
+  {
+    status: "Success",
+    job_stage: "step",
+    event_time: 1743581050,
+    error_message: "",
+  },
+  {
+    status: "Sucass", // Incorrect spelling
+    job_stage: "step2 Completed",
+    event_time: 1743581062,
+    error_message: "",
+  },
+  {
+    status: "Success",
+    job_stage: "step3 Completed",
+    event_time: 1743581076,
+    error_message: "",
+  },
+];
+
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp * 1000); // Convert seconds to milliseconds
+  return date.toLocaleString();
+};
+
+export default function JobList() {
+  const [hoveredTime, setHoveredTime] = useState(null);
+
+  return (
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Job Status</h2>
+      <ul>
+        {jobData.map((job, index) => (
+          <li
+            key={index}
+            className="p-2 border-b flex items-center gap-2 relative"
+            onMouseEnter={() => setHoveredTime(formatTimestamp(job.event_time))}
+            onMouseLeave={() => setHoveredTime(null)}
+          >
+            <span className="font-semibold">{job.status}</span> - {job.job_stage}
+            {hoveredTime && (
+              <div className="absolute bg-gray-700 text-white p-1 rounded text-sm top-0 left-40">
+                {hoveredTime}
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
