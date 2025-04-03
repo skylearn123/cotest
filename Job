@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { Component } from "react";
 
 const jobData = [
   {
@@ -26,29 +26,46 @@ const formatTimestamp = (timestamp) => {
   return date.toLocaleString();
 };
 
-export default function JobList() {
-  const [hoveredTime, setHoveredTime] = useState(null);
+class JobList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hoveredTime: null,
+    };
+  }
 
-  return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Job Status</h2>
-      <ul>
-        {jobData.map((job, index) => (
-          <li
-            key={index}
-            className="p-2 border-b flex items-center gap-2 relative"
-            onMouseEnter={() => setHoveredTime(formatTimestamp(job.event_time))}
-            onMouseLeave={() => setHoveredTime(null)}
-          >
-            <span className="font-semibold">{job.status}</span> - {job.job_stage}
-            {hoveredTime && (
-              <div className="absolute bg-gray-700 text-white p-1 rounded text-sm top-0 left-40">
-                {hoveredTime}
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  handleMouseEnter = (timestamp) => {
+    this.setState({ hoveredTime: formatTimestamp(timestamp) });
+  };
+
+  handleMouseLeave = () => {
+    this.setState({ hoveredTime: null });
+  };
+
+  render() {
+    return (
+      <div className="p-4">
+        <h2 className="text-xl font-bold mb-4">Job Status</h2>
+        <ul>
+          {jobData.map((job, index) => (
+            <li
+              key={index}
+              className="p-2 border-b flex items-center gap-2 relative"
+              onMouseEnter={() => this.handleMouseEnter(job.event_time)}
+              onMouseLeave={this.handleMouseLeave}
+            >
+              <span className="font-semibold">{job.status}</span> - {job.job_stage}
+              {this.state.hoveredTime && (
+                <div className="absolute bg-gray-700 text-white p-1 rounded text-sm top-0 left-40">
+                  {this.state.hoveredTime}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
 }
+
+export default JobList;
