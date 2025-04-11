@@ -1,0 +1,39 @@
+const fs = require("fs");
+const path = require("path");
+const fse = require("fs-extra");
+
+// 1. Folders to delete
+const foldersToDelete = [
+  "node_modules/some-package/folder1",
+  "node_modules/some-package/folder2"
+];
+
+// 2. Files/Folders to copy
+const copyTargets = [
+  {
+    from: "custom/folder/file.ngp",
+    to: "node_modules/some-package/file.ngp"
+  },
+  {
+    from: "custom/folder/config.js",
+    to: "node_modules/some-package/config.js"
+  }
+];
+
+// Delete folders
+foldersToDelete.forEach(folder => {
+  if (fs.existsSync(folder)) {
+    fse.removeSync(folder);
+    console.log(`Deleted: ${folder}`);
+  }
+});
+
+// Copy files/folders
+copyTargets.forEach(({ from, to }) => {
+  if (fs.existsSync(from)) {
+    fse.copySync(from, to);
+    console.log(`Copied from ${from} to ${to}`);
+  } else {
+    console.warn(`Source not found: ${from}`);
+  }
+});
