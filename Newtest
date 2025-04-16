@@ -1,0 +1,66 @@
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+public class YourServiceTest {
+
+    @Mock
+    AppConfig appConfig;
+
+    @Mock
+    EquityRepoConfig equityRepo;
+
+    @Mock
+    EquityConfig equity;
+
+    @Mock
+    EquityRepoVarianceRatioBiz equityVarianceRatioBiz;
+
+    @Mock
+    Dataset<Row> mockDataset;
+
+    @InjectMocks
+    YourService yourService;
+
+    @BeforeEach
+    void setup() {
+        when(appConfig.getEquity()).thenReturn(equity);
+        when(equity.getRepo()).thenReturn(equityRepo);
+
+        when(equityRepo.getRa()).thenReturn("mock/ra/path");
+        when(equityRepo.getReduceRa()).thenReturn("mock/reduced_ra/path");
+        when(equityRepo.getShock()).thenReturn("mock/shock/path");
+        when(equityRepo.getSensixShock()).thenReturn("mock/sensixshock/path");
+        when(equityRepo.getReportDownload()).thenReturn("mock/report_download/path");
+        when(equityRepo.getMarketData()).thenReturn("mock/market_data/path");
+
+        when(yourService.readParquetFileToDataset(anyString())).thenReturn(mockDataset);
+        when(equityVarianceRatioBiz.cleanUpRaData(any(Dataset.class))).thenReturn(mockDataset);
+        when(equityVarianceRatioBiz.computeReducedSensi(any(Dataset.class), any(String[].class))).thenReturn(mockDataset);
+
+        // If yourService.writeDatasetToFileSystem is void, you might need to use doNothing()
+        doNothing().when(yourService).writeDatasetToFileSystem(any(), any(), any());
+    }
+
+    @Test
+    void testExecuteWithRepoType() {
+        yourService.execute("REPO");
+
+        verify(appConfig).getEquity();
+        verify(equity).getRepo();
+        verify(equityRepo).getRa();
+        verify(yourService).readParquetFileToDataset("mock/ra/path");
+        verify(equityVarianceRatioBiz).cleanUpRaData(mockDataset);
+        verify(equityVarianceRatioBiz).computeReducedSensi(eq(mockDataset), any());
+        verify(yourService).writeDatasetToFileSystem(eq(mockDataset), eq("csv"), eq("mock/reduced_ra/path"));
+    }
+}
