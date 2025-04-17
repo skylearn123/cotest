@@ -1,0 +1,70 @@
+import React, { Component } from 'react';
+
+interface State {
+  selectedMaturities: string[];
+}
+
+class MaturitySelector extends Component<{}, State> {
+  constructor(props: {}) {
+    super(props);
+    this.state = {
+      selectedMaturities: [
+        '1D', '2D', '1W', '2W', '3W', '1M', '2M', '3M', '4M', '5M', '6M', '7M',
+        '8M', '9M', '10M', '11M', '1Y', '15M', '18M', '21M', '2Y', '3Y', '4Y',
+        '5Y', '6Y', '7Y', '8Y', '9Y', '10Y', '11Y', '12Y', '13Y', '14Y', '15Y',
+        '16Y', '17Y', '18Y', '19Y', '20Y', '21Y', '22Y', '23Y', '24Y', '25Y',
+        '26Y', '27Y', '28Y', '29Y', '30Y', '40Y', '50Y', '60Y'
+      ]
+    };
+  }
+
+  handleDelete = (value: string) => {
+    this.setState(prevState => ({
+      selectedMaturities: prevState.selectedMaturities.filter(item => item !== value)
+    }));
+  };
+
+  render() {
+    const { selectedMaturities } = this.state;
+
+    return (
+      <div style={{ padding: '10px', maxWidth: '700px' }}>
+        <h4 style={{ background: '#ffe0b3', display: 'inline-block', padding: '4px 8px' }}>
+          Selected Maturity
+        </h4>
+        <div style={{ marginTop: '10px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+          {selectedMaturities.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                border: '1px solid #ccc',
+                borderRadius: '16px',
+                padding: '4px 10px',
+                display: 'flex',
+                alignItems: 'center',
+                background: '#f5f5f5'
+              }}
+            >
+              {item}
+              <button
+                onClick={() => this.handleDelete(item)}
+                style={{
+                  marginLeft: '8px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'red',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+}
+
+export default MaturitySelector;
